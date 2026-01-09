@@ -105,8 +105,8 @@ async function startServer() {
   await server.start();
   server.applyMiddleware({ app });
 
-  const PORT = process.env.PORT || 10000;
-  
+  const PORT = process.env.PORT || 8000;
+
   app.listen(PORT, () => {
     console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
     console.log(`🧪 Test Supabase: http://localhost:${PORT}/test-supabase`);
