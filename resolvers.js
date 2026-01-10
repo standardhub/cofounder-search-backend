@@ -1,54 +1,57 @@
 const { database, DB_TYPE, TABLE_NAME } = require('./database');
 
 // Helper function to map database row to GraphQL object
-const mapRowToCandidate = (row) => ({
-  slug: row.slug,
-  name: row.name,
-  firstName: row.first_name,
-  age: row.age,
-  isWoman: row.is_woman,
-  avatarUrl: row.avatar_url,
-  linkedin: row.linkedin,
-  education: row.education,
-  employment: row.employment,
-  isTechnical: row.is_technical,
-  location: row.location,
-  country: row.country,
-  region: row.region,
-  timing: row.timing,
-  emailSettings: row.email_settings,
-  videoLink: row.video_link,
-  calendlyLink: row.calendly_link,
-  intro: row.intro,
-  impressiveThing: row.impressive_thing,
-  interests: row.interests,
-  responsibilities: row.responsibilities,
-  companyName: row.company_name,
-  companyUrl: row.company_url,
-  hasIdea: row.has_idea,
-  ideas: row.ideas,
-  hasCf: row.has_cf,
-  currentCfLinkedin: row.current_cf_linkedin,
-  currentCfTechnical: row.current_cf_technical,
-  reqFreeText: row.req_free_text,
-  equity: row.equity,
-  cfHasIdea: row.cf_has_idea,
-  cfHasIdeaImportance: row.cf_has_idea_importance,
-  cfIsTechnical: row.cf_is_technical,
-  cfIsTechnicalImportance: row.cf_is_technical_importance,
-  cfResponsibilities: row.cf_responsibilities,
-  cfResponsibilitiesImportance: row.cf_responsibilities_importance,
-  cfLocation: row.cf_location,
-  cfLocationImportance: row.cf_location_importance,
-  cfLocationKmRange: row.cf_location_km_range,
-  cfAgeMin: row.cf_age_min,
-  cfAgeMax: row.cf_age_max,
-  cfAgeImportance: row.cf_age_importance,
-  cfTimingImportance: row.cf_timing_importance,
-  cfInterestsImportance: row.cf_interests_importance,
-  lastSeenAt: row.last_seen_at,
-  savedAt: row.saved_at
-});
+const mapRowToCandidate = (row) => {
+  return {
+    slug: row.slug,
+    name: row.name,
+    firstName: row.first_name,
+    age: row.age,
+    isWoman: row.is_woman,
+    avatarUrl: row.avatar_url,
+    linkedin: row.linkedin,
+    education: row.education,
+    employment: row.employment,
+    isTechnical: row.is_technical,
+    location: row.location,
+    country: row.country,
+    region: row.region,
+    timing: row.timing,
+    emailSettings: row.email_settings,
+    videoLink: row.video_link,
+    calendlyLink: row.calendly_link,
+    intro: row.intro,
+    impressiveThing: row.impressive_thing,
+    interests: row.interests,
+    responsibilities: row.responsibilities,
+    companyName: row.company_name,
+    companyUrl: row.company_url,
+    hasIdea: row.has_idea,
+    ideas: row.ideas,
+    hasCf: row.has_cf,
+    currentCfLinkedin: row.current_cf_linkedin,
+    currentCfTechnical: row.current_cf_technical,
+    reqFreeText: row.req_free_text,
+    equity: row.equity,
+    cfHasIdea: row.cf_has_idea,
+    cfHasIdeaImportance: row.cf_has_idea_importance,
+    cfIsTechnical: row.cf_is_technical,
+    cfIsTechnicalImportance: row.cf_is_technical_importance,
+    cfResponsibilities: row.cf_responsibilities,
+    cfResponsibilitiesImportance: row.cf_responsibilities_importance,
+    cfLocation: row.cf_location,
+    cfLocationImportance: row.cf_location_importance,
+    cfLocationKmRange: row.cf_location_km_range,
+    cfAgeMin: row.cf_age_min,
+    cfAgeMax: row.cf_age_max,
+    cfAgeImportance: row.cf_age_importance,
+    cfTimingImportance: row.cf_timing_importance,
+    cfInterestsImportance: row.cf_interests_importance,
+    // Ensure dates are properly formatted for PostgreSQL
+    lastSeenAt: row.last_seen_at ? (row.last_seen_at instanceof Date ? row.last_seen_at.toISOString() : row.last_seen_at) : null,
+    savedAt: row.saved_at ? (row.saved_at instanceof Date ? row.saved_at.toISOString() : row.saved_at) : null
+  };
+};
 
 // PostgreSQL query builders
 const buildPostgreSQLCandidatesQuery = (filters) => {
@@ -153,21 +156,21 @@ const buildPostgreSQLCandidatesQuery = (filters) => {
   }
 
   if (filters.search) {
-    query += ` AND (intro ILIKE $${paramIndex} OR impressive_thing ILIKE $${paramIndex})`;
-    params.push(`%${filters.search}%`);
-    paramIndex++;
+    query += ` AND (intro ILIKE $${paramIndex} OR impressive_thing ILIKE $${paramIndex + 1})`;
+    params.push(`%${filters.search}%`, `%${filters.search}%`);
+    paramIndex += 2;
   }
 
   if (filters.searchName) {
-    query += ` AND (name ILIKE $${paramIndex} OR first_name ILIKE $${paramIndex})`;
-    params.push(`%${filters.searchName}%`);
-    paramIndex++;
+    query += ` AND (name ILIKE $${paramIndex} OR first_name ILIKE $${paramIndex + 1})`;
+    params.push(`%${filters.searchName}%`, `%${filters.searchName}%`);
+    paramIndex += 2;
   }
 
   if (filters.searchCompany) {
-    query += ` AND (company_name ILIKE $${paramIndex} OR company_url ILIKE $${paramIndex})`;
-    params.push(`%${filters.searchCompany}%`);
-    paramIndex++;
+    query += ` AND (company_name ILIKE $${paramIndex} OR company_url ILIKE $${paramIndex + 1})`;
+    params.push(`%${filters.searchCompany}%`, `%${filters.searchCompany}%`);
+    paramIndex += 2;
   }
 
   if (filters.hasCompany !== undefined) {
