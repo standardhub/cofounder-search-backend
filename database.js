@@ -26,8 +26,7 @@ if (DB_TYPE === 'supabase') {
   }
 
   database = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    connectionString: process.env.DATABASE_URL
   });
   console.log('🔗 Connected to PostgreSQL database');
 }
